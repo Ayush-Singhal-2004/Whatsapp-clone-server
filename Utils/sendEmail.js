@@ -3,23 +3,32 @@ import 'dotenv/config'
 import { generateOTP } from '../helper/otpGenerator.js';
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
+    service: "gmail",
     auth: {
       user: process.env.EMAIL,
       pass: process.env.EMAIL_PASSWORD,
     },
 });
 
-async function sendEmail(email) {
+function sendEmail(email) {
     const otp = generateOTP();
-    const info = await transporter.sendMail({
-        from: process.env.EMAIL,// sender address
-        to: email, // list of receivers
-        subject: "Hello ✔", // Subject line
-        text: otp, // plain text body
-    }).catch((err) => console.log(err));
+    return new Promise(async(resolve, reject) => {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL,
+            to: email,
+            subject: "WhatsApp Clone OTP",
+            html: `<h1>OTP : ${otp}</h1>`
+        }).catch((err) => {
+            console.log(err);
+            reject({
+                status : 550
+            });
+        });
+        resolve({
+            status : 250,
+            data : otp
+        });
+    })
 }
 
 export { sendEmail }

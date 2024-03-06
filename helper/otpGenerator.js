@@ -1,5 +1,5 @@
 function generateOTP() {
-    return Math.floor(1000 + Math.random() * 9000);
+    return Math.floor(Math.random() * 899999 + 100000)
 }
 
 export { generateOTP }
